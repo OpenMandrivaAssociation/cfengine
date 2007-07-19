@@ -1,5 +1,5 @@
 %define	name	cfengine
-%define version 2.1.22
+%define version 2.2.1
 %define release %mkrel 1
 
 Name:		%{name}
@@ -9,7 +9,7 @@ Summary:	Cfengine helps administer remote BSD and System-5-like systems
 License:	GPL
 Group:		Monitoring
 URL:		http://www.cfengine.org
-Source0:	ftp://ftp.iu.hio.no/pub/cfengine/%{name}-%{version}.tar.bz2
+Source0:	ftp://ftp.iu.hio.no/pub/cfengine/%{name}-%{version}.tar.gz
 Source1:	%{name}.vim
 Source4:	cfservd.init
 Source5:	cfexecd.init
@@ -83,7 +83,7 @@ chmod 644 inputs/*
 
 %build
 %serverbuild
-%configure --with-workdir=%{_localstatedir}/%{name}
+%configure2_5x --with-workdir=%{_localstatedir}/%{name}
 %make
 cd doc
 %make

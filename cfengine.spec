@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.1
-%define release %mkrel 1
+%define release %mkrel 2
 
 Name:		%{name}
 Version:	%{version}
@@ -14,6 +14,7 @@ Source1:	%{name}.vim
 Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
+Source7:	%{name}.bash-completion
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -113,6 +114,10 @@ rm -rf %{buildroot}%{_datadir}/%{name}
 install -d -m 755 %{buildroot}%{_datadir}/vim/syntax
 install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/vim/syntax
 
+# bash completion
+install -d -m 755 %{buildroot}%{_sysconfdir}/bash_completion.d
+install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
+
 %post base
 for f in %{info_files}; do
     %_install_info $f
@@ -164,6 +169,7 @@ rm -rf %{buildroot}
 
 %files cfagent
 %defattr(-,root,root)
+%{_sysconfdir}/bash_completion.d/%{name}
 %{_mandir}/man8/cfagent.*
 %{_mandir}/man8/cfenvgraph.*
 %{_mandir}/man8/cfrun.*

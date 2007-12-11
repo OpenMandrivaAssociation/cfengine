@@ -1,6 +1,10 @@
 %define	name	cfengine
-%define version 2.2.1
-%define release %mkrel 2
+%define version 2.2.3
+%define release %mkrel 1
+
+%define major 1
+%define libname %mklibname %{name} %{major}
+%define develname %mklibname -d %{name}
 
 Name:		%{name}
 Version:	%{version}
@@ -15,6 +19,7 @@ Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
 Source7:	%{name}.bash-completion
+Patch:      %{name}-2.2.3-autotools-fix.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -78,13 +83,33 @@ Requires(preun):rpm-helper
 %description cfenvd
 This package contain the cfengine anomaly detection daemon.
 
+%package -n	%{libname}
+Summary:	Dynamic libraries for %{name}
+Group:		System/Libraries
+
+%description -n	%{libname}
+This package contains the library needed to run programs dynamically
+linked with %{name}.
+
+%package -n	%{develname}
+Summary:	Development files for %{name}
+Group:		Development/C
+Requires:	%{libname} = %{version}
+Provides:	%{name}-devel = %{version}-%{release}
+
+%description -n	%{develname}
+This package contains the header files and libraries needed for
+developing programs using the %{name} library.
+
 %prep
 %setup -q
+%patch -p 1
 chmod 644 inputs/*
 
 %build
+autoreconf
 %serverbuild
-%configure2_5x --with-workdir=%{_localstatedir}/%{name}
+%configure2_5x --with-workdir=%{_localstatedir}/%{name} --enable-shared
 %make
 cd doc
 %make
@@ -197,4 +222,12 @@ rm -rf %{buildroot}
 %{_sbindir}/cfexecd
 %{_mandir}/man8/cfexecd.*
 
+%files -n %{libname}
+%defattr(-,root,root)
+%{_libdir}/*.so.*
 
+%files -n %{develname}
+%defattr(-,root,root)
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/*.la

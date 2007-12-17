@@ -33,7 +33,6 @@ Obsoletes:      %{name}-cfagent < 2.2.3
 Obsoletes:      %{name}-cfservd < 2.2.3
 Obsoletes:      %{name}-cfexecd < 2.2.3
 Obsoletes:      %{name}-cfenvd < 2.2.3
-BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 Cfengine, the configuration engine, is a very high level language for

@@ -64,7 +64,7 @@ developing programs using the %{name} library.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p0
+%patch1 -p1
 
 chmod 644 inputs/*
 

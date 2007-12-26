@@ -18,7 +18,8 @@ Source1:	%{name}.vim
 Source4:	cfengine.init
 Source5:	cfengine.sysconfig
 Source7:	%{name}.bash-completion
-Patch:      %{name}-2.2.3-autotools-fix.patch
+Patch0:		%{name}-2.2.3-autotools-fix.patch
+Patch1:		cfengine-fpic.diff
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -33,6 +34,7 @@ Obsoletes:      %{name}-cfagent < 2.2.3
 Obsoletes:      %{name}-cfservd < 2.2.3
 Obsoletes:      %{name}-cfexecd < 2.2.3
 Obsoletes:      %{name}-cfenvd < 2.2.3
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 Cfengine, the configuration engine, is a very high level language for
@@ -61,7 +63,9 @@ developing programs using the %{name} library.
 
 %prep
 %setup -q
-%patch -p 1
+%patch0 -p1
+%patch1 -p0
+
 chmod 644 inputs/*
 
 %build

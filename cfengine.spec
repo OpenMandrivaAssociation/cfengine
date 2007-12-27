@@ -19,7 +19,7 @@ Source4:	cfengine.init
 Source5:	cfengine.sysconfig
 Source7:	%{name}.bash-completion
 Patch0:		%{name}-2.2.3-autotools-fix.patch
-Patch1:		cfengine-fpic.diff
+Patch1:		%{name}-2.2.3-fpic.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel

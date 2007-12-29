@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.3
-%define release %mkrel 2
+%define release %mkrel 3
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -15,8 +15,9 @@ Group:		Monitoring
 URL:		http://www.cfengine.org
 Source0:	ftp://ftp.iu.hio.no/pub/cfengine/%{name}-%{version}.tar.gz
 Source1:	%{name}.vim
-Source4:	cfengine.init
-Source5:	cfengine.sysconfig
+Source4:	cfservd.init
+Source5:	cfexecd.init
+Source6:	cfenvd.init
 Source7:	%{name}.bash-completion
 Patch0:		%{name}-2.2.3-autotools-fix.patch
 Patch1:		%{name}-2.2.3-fpic.patch
@@ -29,12 +30,7 @@ BuildRequires:	texinfo
 BuildRequires:	tetex-latex
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper
-Obsoletes:      %{name}-base < 2.2.3
-Obsoletes:      %{name}-cfagent < 2.2.3
-Obsoletes:      %{name}-cfservd < 2.2.3
-Obsoletes:      %{name}-cfexecd < 2.2.3
-Obsoletes:      %{name}-cfenvd < 2.2.3
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 %description
 Cfengine, the configuration engine, is a very high level language for
@@ -42,6 +38,51 @@ simplifying the task of administrating and configuring large numbers
 of workstations. Cfengine uses the idea of classes and a primitive
 form of intelligence to define and automate the configuration of large
 systems in the most economical way possible.
+
+%package base
+Summary:	Cfengine base files
+Group:		Monitoring
+
+%description base
+This package contain the cfengine base files needed by all subpackages.
+
+%package cfagent
+Summary:	Cfengine agent
+Group:		Monitoring
+Requires:	%{name}-base = %{version}-%{release}
+
+%description cfagent
+This package contain the cfengine agent.
+
+%package cfservd
+Summary:	Cfengine server daemon
+Group:		Monitoring
+Requires:	%{name}-base = %{version}-%{release}
+Requires(post):rpm-helper
+Requires(preun):rpm-helper
+
+%description cfservd
+This package contain the cfengine server daemon.
+
+%package cfexecd
+Summary:	Cfengine agent execution wrapper
+Group:		Monitoring
+Requires:	%{name}-base = %{version}-%{release}
+Requires(post):	rpm-helper
+Requires(preun):rpm-helper
+
+%description cfexecd
+This package contain the cfengine agent execution wrapper.
+
+%package cfenvd
+Summary:	Cfengine anomaly detection daemon
+Group:		Monitoring
+Requires:	%{name}-base = %{version}A-%{release}
+Requires(pre):	rpm-helper
+Requires(preun):rpm-helper
+
+%description cfenvd
+This package contain the cfengine anomaly detection daemon.
 
 %package -n	%{libname}
 Summary:	Dynamic libraries for %{name}
@@ -88,8 +129,9 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/cron.daily
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 install -d -m 755 %{buildroot}%{_initrddir}
 install -d -m 755 %{buildroot}%{_localstatedir}/%{name}
-install -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/cfengine
-install -m 755 %{SOURCE5} %{buildroot}%{_sysconfdir}/sysconfig/cfengine
+install -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/cfservd
+install -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/cfexecd
+install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfenvd
 
 # everything installed there is doc, actually
 rm -rf %{buildroot}%{_datadir}/%{name}
@@ -104,36 +146,84 @@ install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/vim/syntax
 install -d -m 755 %{buildroot}%{_sysconfdir}/bash_completion.d
 install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
 
-%post
+%post base
 for f in %{info_files}; do
     %_install_info $f
 done
 if [ $1 = 1 ]; then
     [ -f "%{_localstatedir}/%{name}/ppkeys/localhost.priv" ] || cfkey >/dev/null 2>&1
 fi
-%_post_service %{name}
 
-%preun
+%preun base
 for f in %{info_files}; do
     %_remove_install_info $f
 done
-%_preun_service %{name}
+
+%post cfexecd
+%_post_service cfexecd
+
+%preun cfexecd
+%_preun_service cfexecd
+
+%post cfenvd
+%_post_service cfenvd
+
+%preun cfenvd
+%_preun_service cfenvd
+
+%post cfservd
+%_post_service cfservd
+
+%preun cfservd
+%_preun_service cfservd
 
 %clean
 rm -rf %{buildroot}
 
-%files
+%files base
 %defattr(-,root,root)
 %doc doc/*.{ps,pdf,html} inputs/*.example
-%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %{_sysconfdir}/cfengine
-%{_sysconfdir}/bash_completion.d/%{name}
-%{_initrddir}/%{name}
+%{_sbindir}/cfkey
+%{_sbindir}/cfshow
+%{_sbindir}/cfdoc
 %{_localstatedir}/%{name}
-%{_sbindir}/*
+%{_mandir}/man8/cfkey.*
+%{_mandir}/man8/cfshow.*
+%{_mandir}/man8/cfengine.*
 %{_infodir}/*
-%{_mandir}/man8/*
 %{_datadir}/vim/syntax/%{name}.vim
+
+
+%files cfagent
+%defattr(-,root,root)
+%{_sysconfdir}/bash_completion.d/%{name}
+%{_mandir}/man8/cfagent.*
+%{_mandir}/man8/cfenvgraph.*
+%{_mandir}/man8/cfrun.*
+%{_mandir}/man8/cfetool*
+%{_sbindir}/cfagent
+%{_sbindir}/cfenvgraph
+%{_sbindir}/cfrun
+%{_sbindir}/cfetool*
+
+%files cfservd
+%defattr(-,root,root)
+%{_initrddir}/cfservd
+%{_sbindir}/cfservd
+%{_mandir}/man8/cfservd.*
+
+%files cfenvd
+%defattr(-,root,root)
+%{_initrddir}/cfenvd
+%{_sbindir}/cfenvd
+%{_mandir}/man8/cfenvd.*
+
+%files cfexecd
+%defattr(-,root,root)
+%{_initrddir}/cfexecd
+%{_sbindir}/cfexecd
+%{_mandir}/man8/cfexecd.*
 
 %files -n %{libname}
 %defattr(-,root,root)

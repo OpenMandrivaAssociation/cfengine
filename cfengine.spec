@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.3
-%define release %mkrel 3
+%define release %mkrel 4
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -77,7 +77,7 @@ This package contain the cfengine agent execution wrapper.
 %package cfenvd
 Summary:	Cfengine anomaly detection daemon
 Group:		Monitoring
-Requires:	%{name}-base = %{version}A-%{release}
+Requires:	%{name}-base = %{version}-%{release}
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper
 

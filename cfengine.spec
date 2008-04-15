@@ -1,6 +1,6 @@
 %define	name	cfengine
-%define version 2.2.3
-%define release %mkrel 5
+%define version 2.2.5
+%define release %mkrel 1
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -13,21 +13,17 @@ Summary:	Cfengine helps administer remote BSD and System-5-like systems
 License:	GPL
 Group:		Monitoring
 URL:		http://www.cfengine.org
-Source0:	ftp://ftp.iu.hio.no/pub/cfengine/%{name}-%{version}.tar.gz
+Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
 Source1:	%{name}.vim
 Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
 Source7:	%{name}.bash-completion
-Patch0:		%{name}-2.2.3-autotools-fix.patch
 Patch1:		%{name}-2.2.3-fpic.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
 BuildRequires:	db4-devel
-BuildRequires:	tetex-dvips
-BuildRequires:	texinfo
-BuildRequires:	tetex-latex
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper
 BuildRoot:      %{_tmppath}/%{name}-%{version}
@@ -104,7 +100,6 @@ developing programs using the %{name} library.
 
 %prep
 %setup -q
-%patch0 -p1
 %patch1 -p1
 
 chmod 644 inputs/*
@@ -114,15 +109,14 @@ autoreconf
 %serverbuild
 %configure2_5x --with-workdir=%{_localstatedir}/%{name} --enable-shared
 %make
-cd doc
-%make
 
 %install
 rm -rf %{buildroot}
 %makeinstall
-pushd doc
-%makeinstall
-popd
+
+# install man page manually
+install -d -m 755 %{buildroot}%{_mandir}/man8
+install -m 644 doc/cfengine.8 %{buildroot}%{_mandir}/man8
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
 install -d -m 755 %{buildroot}%{_sysconfdir}/cron.daily
@@ -136,8 +130,6 @@ install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfenvd
 # everything installed there is doc, actually
 rm -rf %{buildroot}%{_datadir}/%{name}
 
-%define info_files cfengine-Tutorial cfengine-Reference
-
 # install vim syntax file
 install -d -m 755 %{buildroot}%{_datadir}/vim/syntax
 install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/vim/syntax
@@ -147,17 +139,9 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/bash_completion.d
 install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
 
 %post base
-for f in %{info_files}; do
-    %_install_info $f
-done
 if [ $1 = 1 ]; then
     [ -f "%{_localstatedir}/%{name}/ppkeys/localhost.priv" ] || cfkey >/dev/null 2>&1
 fi
-
-%preun base
-for f in %{info_files}; do
-    %_remove_install_info $f
-done
 
 %post cfexecd
 %_post_service cfexecd
@@ -182,26 +166,19 @@ rm -rf %{buildroot}
 
 %files base
 %defattr(-,root,root)
-%doc doc/*.{ps,pdf,html} inputs/*.example
+%doc inputs/*.example
 %{_sysconfdir}/cfengine
 %{_sbindir}/cfkey
 %{_sbindir}/cfshow
 %{_sbindir}/cfdoc
 %{_localstatedir}/%{name}
-%{_mandir}/man8/cfkey.*
-%{_mandir}/man8/cfshow.*
 %{_mandir}/man8/cfengine.*
-%{_infodir}/*
 %{_datadir}/vim/syntax/%{name}.vim
 
 
 %files cfagent
 %defattr(-,root,root)
 %{_sysconfdir}/bash_completion.d/%{name}
-%{_mandir}/man8/cfagent.*
-%{_mandir}/man8/cfenvgraph.*
-%{_mandir}/man8/cfrun.*
-%{_mandir}/man8/cfetool*
 %{_sbindir}/cfagent
 %{_sbindir}/cfenvgraph
 %{_sbindir}/cfrun
@@ -211,19 +188,16 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{_initrddir}/cfservd
 %{_sbindir}/cfservd
-%{_mandir}/man8/cfservd.*
 
 %files cfenvd
 %defattr(-,root,root)
 %{_initrddir}/cfenvd
 %{_sbindir}/cfenvd
-%{_mandir}/man8/cfenvd.*
 
 %files cfexecd
 %defattr(-,root,root)
 %{_initrddir}/cfexecd
 %{_sbindir}/cfexecd
-%{_mandir}/man8/cfexecd.*
 
 %files -n %{libname}
 %defattr(-,root,root)

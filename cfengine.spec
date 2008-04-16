@@ -19,7 +19,7 @@ Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
 Source7:	%{name}.bash-completion
-Patch1:		%{name}-2.2.3-fpic.patch
+Patch1:		%{name}-2.2.5-fpic.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel

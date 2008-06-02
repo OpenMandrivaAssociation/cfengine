@@ -104,7 +104,7 @@ chmod 644 inputs/*
 
 %build
 %serverbuild
-%configure2_5x --with-workdir=%{_localstatedir}/%{name} --enable-shared
+%configure2_5x --with-workdir=%{_localstatedir}/lib/%{name} --enable-shared
 %make
 
 %install
@@ -119,7 +119,7 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
 install -d -m 755 %{buildroot}%{_sysconfdir}/cron.daily
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 install -d -m 755 %{buildroot}%{_initrddir}
-install -d -m 755 %{buildroot}%{_localstatedir}/%{name}
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
 install -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/cfservd
 install -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/cfexecd
 install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfenvd
@@ -137,7 +137,7 @@ install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
 
 %post base
 if [ $1 = 1 ]; then
-    [ -f "%{_localstatedir}/%{name}/ppkeys/localhost.priv" ] || cfkey >/dev/null 2>&1
+    [ -f "%{_localstatedir}/lib/%{name}/ppkeys/localhost.priv" ] || cfkey >/dev/null 2>&1
 fi
 
 %post cfexecd
@@ -168,7 +168,7 @@ rm -rf %{buildroot}
 %{_sbindir}/cfkey
 %{_sbindir}/cfshow
 %{_sbindir}/cfdoc
-%{_localstatedir}/%{name}
+%{_localstatedir}/lib/%{name}
 %{_mandir}/man8/cfengine.*
 %{_datadir}/vim/syntax/%{name}.vim
 

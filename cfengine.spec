@@ -1,5 +1,5 @@
 %define	name	cfengine
-%define version 2.2.7
+%define version 2.2.8
 %define release %mkrel 1
 
 %define major 1
@@ -19,7 +19,6 @@ Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
 Source7:	%{name}.bash-completion
-Patch0:     %{name}-2.2.7-fix-underlinking.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -100,12 +99,10 @@ developing programs using the %{name} library.
 
 %prep
 %setup -q
-%patch -p 1
 
 chmod 644 inputs/*
 
 %build
-autoreconf
 %serverbuild
 %configure2_5x --with-workdir=%{_localstatedir}/lib/%{name} --enable-shared
 %make

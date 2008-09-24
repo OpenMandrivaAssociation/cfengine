@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.8
-%define release %mkrel 1
+%define release %mkrel 2
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -14,7 +14,6 @@ License:	GPL
 Group:		Monitoring
 URL:		http://www.cfengine.org
 Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
-Source1:	%{name}.vim
 Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
@@ -127,10 +126,6 @@ install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfenvd
 # everything installed there is doc, actually
 rm -rf %{buildroot}%{_datadir}/%{name}
 
-# install vim syntax file
-install -d -m 755 %{buildroot}%{_datadir}/vim/syntax
-install -m 644 %{SOURCE1} %{buildroot}%{_datadir}/vim/syntax
-
 # bash completion
 install -d -m 755 %{buildroot}%{_sysconfdir}/bash_completion.d
 install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
@@ -170,7 +165,6 @@ rm -rf %{buildroot}
 %{_sbindir}/cfdoc
 %{_localstatedir}/lib/%{name}
 %{_mandir}/man8/cfengine.*
-%{_datadir}/vim/syntax/%{name}.vim
 
 
 %files cfagent

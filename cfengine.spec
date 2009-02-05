@@ -1,6 +1,6 @@
 %define	name	cfengine
-%define version 2.2.8
-%define release %mkrel 3
+%define version 2.2.9
+%define release %mkrel 1
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -17,7 +17,7 @@ Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
 Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
-Source7:	%{name}.bash-completion
+Patch:      cfengine-2.2.9-fix-format-errors.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -98,6 +98,7 @@ developing programs using the %{name} library.
 
 %prep
 %setup -q
+%patch -p 1
 
 chmod 644 inputs/*
 
@@ -125,10 +126,6 @@ install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfenvd
 
 # everything installed there is doc, actually
 rm -rf %{buildroot}%{_datadir}/%{name}
-
-# bash completion
-install -d -m 755 %{buildroot}%{_sysconfdir}/bash_completion.d
-install -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/bash_completion.d/%{name}
 
 %post base
 if [ $1 = 1 ]; then
@@ -169,7 +166,6 @@ rm -rf %{buildroot}
 
 %files cfagent
 %defattr(-,root,root)
-%{_sysconfdir}/bash_completion.d/%{name}
 %{_sbindir}/cfagent
 %{_sbindir}/cfenvgraph
 %{_sbindir}/cfrun

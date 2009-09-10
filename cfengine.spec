@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.10
-%define release %mkrel 1
+%define release %mkrel 2
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -17,7 +17,8 @@ Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
 Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
-Patch:      cfengine-2.2.9-fix-format-errors.patch
+Patch0:     cfengine-2.2.9-fix-format-errors.patch
+Patch1:     cfengine-2.2.10-fix-warning-for-recurse-statement.patch 
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -98,7 +99,8 @@ developing programs using the %{name} library.
 
 %prep
 %setup -q
-%patch -p 1
+%patch0 -p 1
+%patch1 -p 1
 
 chmod 644 inputs/*
 

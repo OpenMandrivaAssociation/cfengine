@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.10
-%define release %mkrel 2
+%define release %mkrel 3
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -19,6 +19,7 @@ Source5:	cfexecd.init
 Source6:	cfenvd.init
 Patch0:     cfengine-2.2.9-fix-format-errors.patch
 Patch1:     cfengine-2.2.10-fix-warning-for-recurse-statement.patch 
+Patch2:	    cfengine_remove_broken_ldflag_change.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
@@ -101,6 +102,8 @@ developing programs using the %{name} library.
 %setup -q
 %patch0 -p 1
 %patch1 -p 1
+%patch2 -p1
+autoreconf -fi
 
 chmod 644 inputs/*
 

@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.10
-%define release %mkrel 5
+%define release %mkrel 6
 
 %define major 1
 %define libname %mklibname %{name} %{major}

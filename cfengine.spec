@@ -1,6 +1,6 @@
 %define	name	cfengine
 %define version 2.2.10
-%define release %mkrel 6
+%define release %mkrel 7
 
 %define major 1
 %define libname %mklibname %{name} %{major}
@@ -10,7 +10,7 @@ Name:		%{name}
 Version:	%{version}
 Release:	%{release}
 Summary:	Cfengine helps administer remote BSD and System-5-like systems
-License:	GPL
+License:	GPLv2+
 Group:		Monitoring
 URL:		http://www.cfengine.org
 Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
@@ -116,9 +116,7 @@ chmod 644 inputs/*
 rm -rf %{buildroot}
 %makeinstall
 
-# install man page manually
-install -d -m 755 %{buildroot}%{_mandir}/man8
-install -m 644 doc/cfengine.8 %{buildroot}%{_mandir}/man8
+( cd doc ; %makeinstall_std )
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
 install -d -m 755 %{buildroot}%{_sysconfdir}/cron.daily
@@ -166,7 +164,10 @@ rm -rf %{buildroot}
 %{_sbindir}/cfshow
 %{_sbindir}/cfdoc
 %{_localstatedir}/lib/%{name}
-%{_mandir}/man8/cfengine.*
+%{_mandir}/man8/cfengine.8.*
+%{_mandir}/man8/cfkey.8.*
+%{_mandir}/man8/cfshow.8.*
+%{_infodir}/*
 
 
 %files cfagent
@@ -175,21 +176,28 @@ rm -rf %{buildroot}
 %{_sbindir}/cfenvgraph
 %{_sbindir}/cfrun
 %{_sbindir}/cfetool*
+%{_mandir}/man8/cfagent.8.*
+%{_mandir}/man8/cfenvgraph.8.*
+%{_mandir}/man8/cfetool*.8.*
+%{_mandir}/man8/cfrun.8.*
 
 %files cfservd
 %defattr(-,root,root)
 %{_initrddir}/cfservd
 %{_sbindir}/cfservd
+%{_mandir}/man8/cfservd.8.*
 
 %files cfenvd
 %defattr(-,root,root)
 %{_initrddir}/cfenvd
 %{_sbindir}/cfenvd
+%{_mandir}/man8/cfenvd.8.*
 
 %files cfexecd
 %defattr(-,root,root)
 %{_initrddir}/cfexecd
 %{_sbindir}/cfexecd
+%{_mandir}/man8/cfexecd.8.*
 
 %files -n %{libname}
 %defattr(-,root,root)

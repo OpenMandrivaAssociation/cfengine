@@ -24,7 +24,7 @@ BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
 BuildRequires:	db4-devel
-BuildRequires:  tetex-latex
+BuildRequires:  tetex-latex texinfo 
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper
 BuildRoot:      %{_tmppath}/%{name}-%{version}

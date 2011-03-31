@@ -111,7 +111,19 @@ chmod 644 inputs/*
 %install
 %makeinstall
 
-( cd doc ; %makeinstall_std )
+# texi broken?
+%if 0
+%makeinstall_std -C doc
+%else
+cd doc
+for i in *.8; do
+	install -m644 $i -D %{buildroot}%{_mandir}/man8/$i
+done
+for i in *.info; do
+	install -m644 $i -D %{buildroot}%{_infodir}/$i
+done
+%endif
+cd -
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
 install -d -m 755 %{buildroot}%{_sysconfdir}/cron.daily

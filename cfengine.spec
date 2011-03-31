@@ -19,7 +19,7 @@ Patch2:		cfengine_remove_broken_ldflag_change.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
-BuildRequires:	db4-devel
+BuildRequires:	db5-devel
 BuildRequires:	tetex-latex texinfo 
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper

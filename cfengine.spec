@@ -1,14 +1,10 @@
-%define	name	cfengine
-%define version 2.2.10
-%define release %mkrel 8
-
 %define major 1
 %define libname %mklibname %{name} %{major}
 %define develname %mklibname -d %{name}
 
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
+Name:		cfengine
+Version:	2.2.10
+Release:	9
 Summary:	Cfengine helps administer remote BSD and System-5-like systems
 License:	GPLv2+
 Group:		Monitoring
@@ -17,17 +13,16 @@ Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
 Source4:	cfservd.init
 Source5:	cfexecd.init
 Source6:	cfenvd.init
-Patch0:     cfengine-2.2.9-fix-format-errors.patch
-Patch1:     cfengine-2.2.10-fix-warning-for-recurse-statement.patch 
-Patch2:	    cfengine_remove_broken_ldflag_change.patch
+Patch0:		cfengine-2.2.9-fix-format-errors.patch
+Patch1:		cfengine-2.2.10-fix-warning-for-recurse-statement.patch 
+Patch2:		cfengine_remove_broken_ldflag_change.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
 BuildRequires:	db4-devel
-BuildRequires:  tetex-latex texinfo 
+BuildRequires:	tetex-latex texinfo 
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper
-BuildRoot:      %{_tmppath}/%{name}-%{version}
 
 %description
 Cfengine, the configuration engine, is a very high level language for
@@ -36,49 +31,49 @@ of workstations. Cfengine uses the idea of classes and a primitive
 form of intelligence to define and automate the configuration of large
 systems in the most economical way possible.
 
-%package base
+%package	base
 Summary:	Cfengine base files
 Group:		Monitoring
 
-%description base
+%description	base
 This package contain the cfengine base files needed by all subpackages.
 
-%package cfagent
+%package	cfagent
 Summary:	Cfengine agent
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
 
-%description cfagent
+%description	cfagent
 This package contain the cfengine agent.
 
-%package cfservd
+%package	cfservd
 Summary:	Cfengine server daemon
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
-Requires(post):rpm-helper
+Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 
-%description cfservd
+%description	cfservd
 This package contain the cfengine server daemon.
 
-%package cfexecd
+%package	cfexecd
 Summary:	Cfengine agent execution wrapper
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 
-%description cfexecd
+%description	cfexecd
 This package contain the cfengine agent execution wrapper.
 
-%package cfenvd
+%package	cfenvd
 Summary:	Cfengine anomaly detection daemon
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper
 
-%description cfenvd
+%description	cfenvd
 This package contain the cfengine anomaly detection daemon.
 
 %package -n	%{libname}
@@ -114,7 +109,6 @@ chmod 644 inputs/*
 %make
 
 %install
-rm -rf %{buildroot}
 %makeinstall
 
 ( cd doc ; %makeinstall_std )
@@ -154,11 +148,7 @@ fi
 %preun cfservd
 %_preun_service cfservd
 
-%clean
-rm -rf %{buildroot}
-
 %files base
-%defattr(-,root,root)
 %doc inputs/*.example
 %{_sysconfdir}/cfengine
 %{_sbindir}/cfkey
@@ -172,7 +162,6 @@ rm -rf %{buildroot}
 
 
 %files cfagent
-%defattr(-,root,root)
 %{_sbindir}/cfagent
 %{_sbindir}/cfenvgraph
 %{_sbindir}/cfrun
@@ -183,29 +172,24 @@ rm -rf %{buildroot}
 %{_mandir}/man8/cfrun.8.*
 
 %files cfservd
-%defattr(-,root,root)
 %{_initrddir}/cfservd
 %{_sbindir}/cfservd
 %{_mandir}/man8/cfservd.8.*
 
 %files cfenvd
-%defattr(-,root,root)
 %{_initrddir}/cfenvd
 %{_sbindir}/cfenvd
 %{_mandir}/man8/cfenvd.8.*
 
 %files cfexecd
-%defattr(-,root,root)
 %{_initrddir}/cfexecd
 %{_sbindir}/cfexecd
 %{_mandir}/man8/cfexecd.8.*
 
 %files -n %{libname}
-%defattr(-,root,root)
 %{_libdir}/*.so.*
 
 %files -n %{develname}
-%defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/*.la

@@ -204,4 +204,3 @@ fi
 %files -n %{develname}
 %{_libdir}/*.so
 %{_libdir}/*.a
-%{_libdir}/*.la

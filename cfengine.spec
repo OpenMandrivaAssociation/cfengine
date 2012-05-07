@@ -4,7 +4,7 @@
 
 Name:		cfengine
 Version:	2.2.10
-Release:	10
+Release:	11
 Summary:	Cfengine helps administer remote BSD and System-5-like systems
 License:	GPLv2+
 Group:		Monitoring
@@ -19,7 +19,7 @@ Patch2:		cfengine_remove_broken_ldflag_change.patch
 BuildRequires:	flex
 BuildRequires:	bison
 BuildRequires:	openssl-devel
-BuildRequires:	db5-devel
+BuildRequires:	db-devel
 BuildRequires:	tetex-latex texinfo 
 Requires(pre):	rpm-helper
 Requires(preun):rpm-helper

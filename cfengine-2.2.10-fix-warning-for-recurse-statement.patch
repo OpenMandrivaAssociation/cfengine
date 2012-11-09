@@ -1,0 +1,11 @@
+diff -Naur -x '*~' cfengine-2.2.10/src/edittools.c cfengine-2.2.10-fix-warning-for-recurse-statement/src/edittools.c
+--- cfengine-2.2.10/src/edittools.c	2008-08-20 19:48:24.000000000 +0200
++++ cfengine-2.2.10-fix-warning-for-recurse-statement/src/edittools.c	2009-09-10 14:05:54.000000000 +0200
+@@ -254,6 +254,7 @@
+       case EditIfElapsed:
+       case EditExpireAfter:
+       case EditSplit:
++      case EditRecurse:
+         break;
+ 
+       case EditUseShell:

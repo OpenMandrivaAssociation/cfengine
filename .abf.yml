@@ -1,5 +1,2 @@
 sources:
-  "cfengine-2.2.10.tar.gz:"	032bec0bc59ffee7179422e96dfd902afbf94340
-  "cfenvd.init:"	69e8bd0062b9ad03874b16872258fd78adfe0248
-  "cfexecd.init:"	9174c8394db51f149863fa9c43789aea49c35c0b
-  "cfservd.init:"	bbc50be17bb9df5ee20b0d335cfda81a73406c64
+  "cfengine-2.2.10.tar.gz": 032bec0bc59ffee7179422e96dfd902afbf94340

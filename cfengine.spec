@@ -5,7 +5,7 @@
 Summary:	Cfengine helps administer remote BSD and System-5-like systems
 Name:		cfengine
 Version:	2.2.10
-Release:	13
+Release:	14
 License:	GPLv2+
 Group:		Monitoring
 Url:		http://www.cfengine.org

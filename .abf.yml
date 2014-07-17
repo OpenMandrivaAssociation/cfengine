@@ -1,2 +1,4 @@
+removed_sources:
+  cfengine-2.2.10.tar.gz: 032bec0bc59ffee7179422e96dfd902afbf94340
 sources:
-  "cfengine-2.2.10.tar.gz": 032bec0bc59ffee7179422e96dfd902afbf94340
+  cfengine-3.3.0.tar.gz: 15ac009acaebf8fb402c23f3632470555bc48ecb

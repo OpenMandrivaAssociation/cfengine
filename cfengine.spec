@@ -1,29 +1,32 @@
-%define major	1
-%define libname %mklibname %{name} %{major}
-%define devname %mklibname -d %{name}
+%define _fortify_cflags %{nil}
 
-Summary:	Cfengine helps administer remote BSD and System-5-like systems
+%define major 1
+%define libname %mklibname %{name}_ %{major}
+%define develname %mklibname -d %{name}
+
 Name:		cfengine
-Version:	2.2.10
-Release:	17
-License:	GPLv2+
+Version:	3.3.0
+Release:	1
+Summary:	Cfengine helps administer remote BSD and System-5-like systems
+License:	GPL
 Group:		Monitoring
-Url:		http://www.cfengine.org
-Source0:	http://www.cfengine.org/downloads/%{name}-%{version}.tar.gz
-Source4:	cfservd.init
-Source5:	cfexecd.init
-Source6:	cfenvd.init
-Patch0:		cfengine-2.2.9-fix-format-errors.patch
-Patch1:		cfengine-2.2.10-fix-warning-for-recurse-statement.patch 
-Patch2:		cfengine_remove_broken_ldflag_change.patch
-
-BuildRequires:	bison
+URL:		http://www.cfengine.org
+Source0:	http://www.cfengine.org/tarballs/%{name}-%{version}.tar.gz
+Source4:	cfengine-serverd.init
+Source5:	cfengine-execd.init
+Source6:	cfengine-monitord.init
 BuildRequires:	flex
-BuildRequires:	tetex-latex
-BuildRequires:	texinfo 
-BuildRequires:	db5-devel
-BuildRequires:	pkgconfig(openssl)
-Requires(pre,preun):	rpm-helper
+BuildRequires:	bison
+BuildRequires:	openssl-devel
+BuildRequires:	db-devel
+BuildRequires:	graphviz-devel
+BuildRequires:	mysql-devel
+BuildRequires:	postgresql-devel
+BuildRequires:	pcre-devel
+BuildRequires:	pkgconfig(tokyocabinet)
+Requires(pre):	rpm-helper
+Requires(preun):rpm-helper
+%rename cfengine3
 
 %description
 Cfengine, the configuration engine, is a very high level language for
@@ -32,176 +35,193 @@ of workstations. Cfengine uses the idea of classes and a primitive
 form of intelligence to define and automate the configuration of large
 systems in the most economical way possible.
 
-%package	base
+%package base
 Summary:	Cfengine base files
 Group:		Monitoring
+Requires:	lsb-release
+%rename cfengine3-base
 
-%description	base
+%description base
 This package contain the cfengine base files needed by all subpackages.
 
-%package	cfagent
+%package agent
 Summary:	Cfengine agent
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
+%rename cfengine3-agent
 
-%description	cfagent
+%description agent
 This package contain the cfengine agent.
 
-%package	cfservd
+%package serverd
 Summary:	Cfengine server daemon
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
-Requires(post,preun):	rpm-helper
+Requires(post):rpm-helper
+Requires(preun):rpm-helper
+%rename cfengine3-serverd
 
-%description	cfservd
+%description serverd
 This package contain the cfengine server daemon.
 
-%package	cfexecd
+%package execd
 Summary:	Cfengine agent execution wrapper
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
-Requires(post,preun):	rpm-helper
+Requires(post):	rpm-helper
+Requires(preun):rpm-helper
+%rename cfengine3-execd
 
-%description	cfexecd
+%description execd
 This package contain the cfengine agent execution wrapper.
 
-%package	cfenvd
+%package monitord
 Summary:	Cfengine anomaly detection daemon
 Group:		Monitoring
 Requires:	%{name}-base = %{version}-%{release}
-Requires(pre,preun):	rpm-helper
+Requires(pre):	rpm-helper
+Requires(preun):rpm-helper
+%rename cfengine3-monitord
 
-%description	cfenvd
+%description monitord
 This package contain the cfengine anomaly detection daemon.
 
 %package -n	%{libname}
 Summary:	Dynamic libraries for %{name}
 Group:		System/Libraries
+%define old_libname %mklibname %{name}3_ %{major}
+%rename %{old_libname}
 
 %description -n	%{libname}
 This package contains the library needed to run programs dynamically
 linked with %{name}.
 
-%package -n	%{devname}
+%package -n	%{develname}
 Summary:	Development files for %{name}
 Group:		Development/C
 Requires:	%{libname} = %{version}
 Provides:	%{name}-devel = %{version}-%{release}
+%define old_develname %mklibname -d %{name}3
+%rename %{old_develname}
 
-%description -n	%{devname}
+%description -n	%{develname}
 This package contains the header files and libraries needed for
 developing programs using the %{name} library.
 
 %prep
-%setup -q
-%apply_patches
-
-sed -i -e 's|AM_CONFIG_HEADER|AC_CONFIG_HEADERS|g' \
-	configure*
-autoreconf -fi
-
-chmod 644 inputs/*
+%setup -q -n %{name}-%{version}
 
 %build
 %serverbuild
-%configure2_5x \
-	--with-workdir=%{_localstatedir}/lib/%{name} \
-	--disable-static \
-	--enable-shared
+%configure2_5x --with-workdir=%{_localstatedir}/lib/%{name} --enable-shared
 %make
 
 %install
-%makeinstall
+%makeinstall_std
 
-# texi broken?
-%if 0
-%makeinstall_std -C doc
-%else
-cd doc
-for i in *.8; do
-	install -m644 $i -D %{buildroot}%{_mandir}/man8/$i
-done
-for i in *.info; do
-	install -m644 $i -D %{buildroot}%{_infodir}/$i
-done
-%endif
-cd -
+install -d -m 755 %{buildroot}%{_sysconfdir}
 
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
-install -d -m 755 %{buildroot}%{_sysconfdir}/cron.daily
-install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/bin
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/lastseen
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/modules
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/outputs
+install -d -m 700 %{buildroot}%{_localstatedir}/lib/%{name}/ppkeys
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/randseed
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/reports
+install -d -m 700 %{buildroot}%{_localstatedir}/lib/%{name}/rpc_in
+install -d -m 700 %{buildroot}%{_localstatedir}/lib/%{name}/rpc_out
+install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}/rpc_state
+
+#mv %{buildroot}%{_docdir}/%{name}/inputs \
+#    %{buildroot}%{_sysconfdir}/%{name}
+
+pushd %{buildroot}%{_localstatedir}/lib/%{name}
+ln -sf ../../..%{_sysconfdir}/%{name} inputs
+popd
+pushd %{buildroot}%{_localstatedir}/lib/%{name}/bin
+#ln -sf ../../../../%{_sbindir}/cf-promises .
+for i in ../../../../%{_sbindir}/cf-*
+do
+ln -sf ../../../../%{_sbindir}/$i .
+done
+popd
+
 install -d -m 755 %{buildroot}%{_initrddir}
-install -d -m 755 %{buildroot}%{_localstatedir}/lib/%{name}
-install -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/cfservd
-install -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/cfexecd
-install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfenvd
+install -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/cfengine-serverd
+install -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/cfengine-execd
+install -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/cfengine-monitord
 
-# everything installed there is doc, actually
-rm -rf %{buildroot}%{_datadir}/%{name}
+# mv %{buildroot}%{_docdir}/%{name} %{buildroot}%{_docdir}/%{name}
+
+# compatibility purpose
+pushd %{buildroot}%{_localstatedir}/lib/%{name}
+ln -sf %{_localstatedir}/lib/%{name} ../../%{name}
+popd
 
 %post base
 if [ $1 = 1 ]; then
-    [ -f "%{_localstatedir}/lib/%{name}/ppkeys/localhost.priv" ] || cfkey >/dev/null 2>&1
+    [ -f "%{_localstatedir}/lib/%{name}/ppkeys/localhost.priv" ] || cf-key >/dev/null 2>&1
 fi
 
-%post cfexecd
-%_post_service cfexecd
+%post execd
+%_post_service cfengine-execd
 
-%preun cfexecd
-%_preun_service cfexecd
+%preun execd
+%_preun_service cfengine-execd
 
-%post cfenvd
-%_post_service cfenvd
+%post monitord
+%_post_service cfengine-monitord
 
-%preun cfenvd
-%_preun_service cfenvd
+%preun monitord
+%_preun_service cfengine-monitord
 
-%post cfservd
-%_post_service cfservd
+%post serverd
+%_post_service cfengine-serverd
 
-%preun cfservd
-%_preun_service cfservd
+%preun serverd
+%_preun_service cfengine-serverd
 
 %files base
-%doc inputs/*.example
-%{_sysconfdir}/cfengine
-%{_sbindir}/cfkey
-%{_sbindir}/cfshow
-%{_sbindir}/cfdoc
+%doc %{_docdir}/README
+%doc %{_docdir}/ChangeLog
+%doc %{_docdir}/example_config
+%doc %{_docdir}/examples
+%{_bindir}/cf-key
+%{_bindir}/cf-promises
+%{_datadir}/CoreBase
 %{_localstatedir}/lib/%{name}
-%{_mandir}/man8/cfengine.8.*
-%{_mandir}/man8/cfkey.8.*
-%{_mandir}/man8/cfshow.8.*
-%{_infodir}/*
+%{_localstatedir}/%{name}
+# %config(noreplace) %{_sysconfdir}/%{name}
+%{_mandir}/man8/cf-key.8*
+%{_mandir}/man8/cf-promises.8*
 
-%files cfagent
-%{_sbindir}/cfagent
-%{_sbindir}/cfenvgraph
-%{_sbindir}/cfrun
-%{_sbindir}/cfetool*
-%{_mandir}/man8/cfagent.8.*
-%{_mandir}/man8/cfenvgraph.8.*
-%{_mandir}/man8/cfetool*.8.*
-%{_mandir}/man8/cfrun.8.*
+%files agent
+%{_bindir}/cf-agent
+%{_bindir}/cf-know
+%{_bindir}/cf-report
+%{_bindir}/cf-runagent
+%{_mandir}/man8/cf-agent.8*
+%{_mandir}/man8/cf-know.8*
+%{_mandir}/man8/cf-report.8*
+%{_mandir}/man8/cf-runagent.8*
 
-%files cfservd
-%{_initrddir}/cfservd
-%{_sbindir}/cfservd
-%{_mandir}/man8/cfservd.8.*
+%files serverd
+%{_initrddir}/cfengine-serverd
+%{_bindir}/cf-serverd
+%{_mandir}/man8/cf-serverd.8*
 
-%files cfenvd
-%{_initrddir}/cfenvd
-%{_sbindir}/cfenvd
-%{_mandir}/man8/cfenvd.8.*
+%files monitord
+%{_initrddir}/cfengine-monitord
+%{_bindir}/cf-monitord
+%{_mandir}/man8/cf-monitord.8*
 
-%files cfexecd
-%{_initrddir}/cfexecd
-%{_sbindir}/cfexecd
-%{_mandir}/man8/cfexecd.8.*
+%files execd
+%{_initrddir}/cfengine-execd
+%{_bindir}/cf-execd
+%{_mandir}/man8/cf-execd.8*
 
 %files -n %{libname}
-%{_libdir}/libcfengine.so.%{major}*
+%{_libdir}/*.so.%{major}*
 
-%files -n %{devname}
+%files -n %{develname}
 %{_libdir}/*.so
-

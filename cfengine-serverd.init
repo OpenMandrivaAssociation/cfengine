@@ -1,23 +1,22 @@
 #!/bin/sh
 #
 # chkconfig: 345 55 45
-# description: Starts the cfexecd daemon
+# description: Starts the cf-serverd daemon
 
 ### BEGIN INIT INFO
-# Provides: cfexecd
+# Provides: cfengine-serverd
 # Required-Start: $network
 # Required-Stop: $network
 # Default-Start: 345
-# Short-Description: Starts the cfexecd daemon
-# Description: This startup script launches the cfexecd daemon
+# Short-Description: Starts the cf-serverd daemon
+# Description: This startup script launches the cf-serverd daemon
 ### END INIT INFO
 
 # Local values
-NAME=cfexecd
+NAME=cf-serverd
 BINARY=/usr/sbin/$NAME
 PROCESS=$NAME
 LOCKFILE=/var/lock/subsys/$NAME
-CFINPUTS=/etc/cfengine
 
 # Source function library.
 . /etc/rc.d/init.d/functions
@@ -28,7 +27,6 @@ CFINPUTS=/etc/cfengine
 # Check that networking is up.
 [ ${NETWORKING} = "no" ] && exit 0
 
-
 # load service configuration
 [ -f /etc/sysconfig/cfengine ] && . /etc/sysconfig/cfengine
 
@@ -36,7 +34,6 @@ start() {
     # Check if it is already running
     if [ ! -f $LOCKFILE ]; then
 	echo -n "Starting $NAME:"
-	export CFINPUTS
 	daemon $BINARY
 	RETVAL=$?
 	[ $RETVAL -eq 0 ] && touch $LOCKFILE

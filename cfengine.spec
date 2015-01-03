@@ -117,7 +117,7 @@ developing programs using the %{name} library.
 %make
 
 %install
-%makeinstall_std
+%makeinstall_std projlibdir=%{_libdir}
 
 install -d -m 755 %{buildroot}%{_sysconfdir}
 
